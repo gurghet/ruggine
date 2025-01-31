@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
 - namespace.yaml
 - deployment.yaml
+- doppler-secret.yaml
 
 commonLabels:
   app.kubernetes.io/name: ruggine
