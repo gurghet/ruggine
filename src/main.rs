@@ -1,0 +1,89 @@
+use axum::{
+    routing::get,
+    Router,
+    response::Redirect,
+    extract::Path,
+};
+use axum::serve;
+use std::net::SocketAddr;
+use std::collections::HashMap;
+
+#[tokio::main]
+async fn main() {
+    // Create static URL mappings
+    let mut url_map = HashMap::new();
+    url_map.insert("B5Z".to_string(), "https://codecraft.engineering".to_string());
+
+    // Build our application with routes
+    let app = Router::new()
+        .route("/", get(|| async { "URL Shortener Service\n" }))
+        .route("/:code", get(redirect_handler));
+
+    // Run our app
+    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    println!("Listening on {}", addr);
+    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
+    serve(listener, app).await.unwrap();
+}
+
+async fn redirect_handler(Path(code): Path<String>) -> Redirect {
+    match code.as_str() {
+        "B5Z" => Redirect::temporary("https://codecraft.engineering"),
+        _ => Redirect::temporary("/"),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use axum::{
+        body::to_bytes,
+        http::{Request, StatusCode},
+        Router,
+    };
+    use tower::ServiceExt; // for `oneshot`
+
+    #[tokio::test]
+    async fn test_root_endpoint() {
+        let app = Router::new().route("/", get(|| async { "URL Shortener Service\n" }));
+
+        let response = app
+            .oneshot(Request::builder().uri("/").body(axum::body::Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+
+        let body = to_bytes(response.into_body(), 1024).await.unwrap();
+        assert_eq!(&body[..], b"URL Shortener Service\n");
+    }
+
+    #[tokio::test]
+    async fn test_valid_redirect() {
+        let app = Router::new().route("/:code", get(redirect_handler));
+
+        let response = app
+            .oneshot(Request::builder().uri("/B5Z").body(axum::body::Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::TEMPORARY_REDIRECT);
+        assert_eq!(
+            response.headers().get("location").unwrap(),
+            "https://codecraft.engineering"
+        );
+    }
+
+    #[tokio::test]
+    async fn test_invalid_redirect() {
+        let app = Router::new().route("/:code", get(redirect_handler));
+
+        let response = app
+            .oneshot(Request::builder().uri("/INVALID").body(axum::body::Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::TEMPORARY_REDIRECT);
+        assert_eq!(response.headers().get("location").unwrap(), "/");
+    }
+}

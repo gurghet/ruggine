@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ruggine
+  namespace: ruggine
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ruggine
+  template:
+    metadata:
+      labels:
+        app: ruggine
+    spec:
+      imagePullSecrets:
+      - name: ghcr-secret
+      containers:
+      - name: ruggine
+        image: ghcr.io/gurghet/ruggine:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+          name: http
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+        env:
+        - name: TZ
+          value: "Europe/Rome"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ruggine
+  namespace: ruggine
+spec:
+  ports:
+  - port: 80
+    targetPort: http
+    protocol: TCP
+    name: http
+  selector:
+    app: ruggine
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ruggine
+  namespace: ruggine
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  tls:
+  - hosts:
+    - ruggine.codecraft.engineering
+    secretName: ruggine-tls
+  rules:
+  - host: ruggine.codecraft.engineering
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: ruggine
+            port:
+              name: http

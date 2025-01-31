@@ -1,0 +1,15 @@
+[package]
+name = "url_shortener"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "0.7"
+tokio = { version = "1", features = ["full"] }
+sqlx = { version = "0.7", features = ["sqlite", "runtime-tokio-native-tls"] }
+base32 = "0.4"
+tower_governor = "0.4"
+
+[dev-dependencies]
+tower = "0.5"
+hyper = "1.2"

@@ -1,0 +1,57 @@
+name: Build and Deploy Docker Image
+
+on:
+  push:
+    branches: ['master']
+  pull_request:
+    branches: ['master']
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Docker Login
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: gurghet
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v5.1.0
+        with:
+          context: .
+          file: ./Dockerfile
+          push: ${{ github.event_name == 'push' }}
+          platforms: linux/arm64
+          tags: |
+            ghcr.io/gurghet/ruggine:${{ github.sha }}
+            ghcr.io/gurghet/ruggine:latest
+          cache-from: |
+            type=registry,ref=ghcr.io/gurghet/ruggine:buildcache
+          cache-to: |
+            type=registry,ref=ghcr.io/gurghet/ruggine:buildcache,mode=max
+
+      - name: Create Release
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: release-${{ github.sha }}
+          name: Release ${{ github.sha }}
+          generate_release_notes: true
