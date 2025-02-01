@@ -4,3 +4,28 @@ metadata:
   name: ruggine-staging
 spec:
   replicas: 2
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ruggine-staging
+  namespace: ruggine
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  tls:
+  - hosts:
+    - staging.codecraft.engineering
+    secretName: staging-codecraft-engineering-tls
+  rules:
+  - host: staging.codecraft.engineering
+    http:
+      paths:
+      - path: /url
+        pathType: Prefix
+        backend:
+          service:
+            name: ruggine-staging
+            port:
+              name: http
