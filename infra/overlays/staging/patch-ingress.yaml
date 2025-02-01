@@ -9,7 +9,7 @@ spec:
   tls:
   - hosts:
     - staging.codecraft.engineering
-    secretName: codecraft-engineering-tls
+    secretName: staging-codecraft-engineering-tls
   rules:
   - host: staging.codecraft.engineering
     http:
@@ -18,6 +18,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: ruggine-service
+            name: staging-ruggine-service
             port:
               name: http

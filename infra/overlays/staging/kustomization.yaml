@@ -11,6 +11,10 @@ patches:
   target:
     kind: Ingress
     name: ruggine
+
+commonLabels:
+  environment: staging
+
 images:
 - name: ghcr.io/gurghet/ruggine
   newTag: 2847f5be80da2a114c8b121c1b4574670b4357f0
