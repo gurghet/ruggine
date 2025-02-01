@@ -1,14 +1,20 @@
-FROM rust:slim-bookworm as builder
-
-# Install build dependencies
+FROM lukemathwalker/cargo-chef:latest-rust-1.70.0 AS chef
+# Install build dependencies 
 RUN apt-get update && \
     apt-get install -y pkg-config libssl-dev && \
     rm -rf /var/lib/apt/lists/*
+WORKDIR app
 
-WORKDIR /usr/src/app
+FROM chef AS planner
 COPY . .
+RUN cargo chef prepare --recipe-path recipe.json
 
-# Build the application in release mode
+FROM chef AS builder
+COPY --from=planner /app/recipe.json recipe.json
+# Build dependencies - this is the caching Docker layer!
+RUN cargo chef cook --release --recipe-path recipe.json
+# Build application
+COPY . .
 RUN cargo build --release
 
 # Create a new stage with a minimal image
@@ -22,7 +28,7 @@ RUN apt-get update && \
 WORKDIR /app
 
 # Copy the built binary from builder stage
-COPY --from=builder /usr/src/app/target/release/url_shortener /app/
+COPY --from=builder /app/target/release/url_shortener /app/
 
 # Expose the port the app runs on
 EXPOSE 3000

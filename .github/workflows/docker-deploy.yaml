@@ -44,8 +44,10 @@ jobs:
             ghcr.io/gurghet/ruggine:${{ github.sha }}
             ghcr.io/gurghet/ruggine:latest
           cache-from: |
+            type=gha
             type=registry,ref=ghcr.io/gurghet/ruggine:buildcache
           cache-to: |
+            type=gha,mode=max
             type=registry,ref=ghcr.io/gurghet/ruggine:buildcache,mode=max
 
       - name: Setup Kustomize
