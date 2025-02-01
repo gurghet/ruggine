@@ -39,6 +39,9 @@ cd infra
 kustomize edit set image ghcr.io/gurghet/ruggine:$GIT_SHA
 cd ..
 
+echo -e "${YELLOW}⏸️  Press Enter to continue with git operations...${NC}"
+read -r
+
 # Commit and push the changes
 echo -e "${YELLOW}📤 Committing and pushing changes...${NC}"
 git add infra/kustomization.yaml

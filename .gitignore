@@ -1,0 +1,12 @@
+# Rust build directory
+/target/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment files
+.env
+.env.local
