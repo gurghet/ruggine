@@ -9,7 +9,7 @@ spec:
   tls:
   - hosts:
     - staging.codecraft.engineering
-    secretName: staging-codecraft-engineering-tls
+    secretName: codecraft-engineering-tls
   rules:
   - host: staging.codecraft.engineering
     http:
