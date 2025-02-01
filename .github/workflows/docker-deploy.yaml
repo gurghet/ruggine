@@ -48,6 +48,20 @@ jobs:
           cache-to: |
             type=registry,ref=ghcr.io/gurghet/ruggine:buildcache,mode=max
 
+      - name: Setup Kustomize
+        uses: imranismail/setup-kustomize@v2
+
+      - name: Update image tag and commit
+        if: github.event_name == 'push'
+        run: |
+          cd infra
+          kustomize edit set image ghcr.io/gurghet/ruggine:${{ github.sha }}
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add kustomization.yaml
+          git commit -m "ci: update ruggine image to ${{ github.sha }}"
+          git push
+
       - name: Create Release
         if: github.event_name == 'push'
         uses: softprops/action-gh-release@v1
