@@ -1,0 +1,11 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: staging-codecraft-tls
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+spec:
+  secretName: staging-codecraft-tls
+  commonName: staging.codecraft.engineering
+  dnsNames:
+    - staging.codecraft.engineering
