@@ -6,4 +6,4 @@ resources:
 
 images:
 - name: ghcr.io/gurghet/ruggine
-  newTag: d93ca84d2ea84bd92d10934f942ba7de8eb31c3f
+  newTag: bab4ef8d14d2392274173c536a58007eb4014db6
