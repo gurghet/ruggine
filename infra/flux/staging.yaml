@@ -4,8 +4,6 @@ metadata:
   name: ruggine-staging
   namespace: flux-system
 spec:
-  dependsOn:
-    - name: ruggine-base
   interval: 1m
   path: ./infra/overlays/staging
   prune: true

@@ -4,8 +4,6 @@ metadata:
   name: ruggine-prod
   namespace: flux-system
 spec:
-  dependsOn:
-    - name: ruggine-base
   interval: 1m
   path: ./infra/overlays/prod
   prune: true
