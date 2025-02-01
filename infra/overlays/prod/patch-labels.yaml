@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ruggine
+spec:
+  selector:
+    matchLabels:
+      app: ruggine
+      environment: prod
+    environment: prod
+  template:
+    metadata:
+      labels:
+        app: ruggine
+        environment: prod
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ruggine-service
+spec:
+  selector:
+    app: ruggine
+    environment: prod
