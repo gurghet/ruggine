@@ -8,4 +8,4 @@ patchesStrategicMerge:
 - patch-deployment.yaml
 images:
 - name: ghcr.io/gurghet/ruggine
-  newTag: 8d759cf29bba0c4d9ab805082e1939054cb7138a
+  newTag: 61f24d349b921c8fc45b1c0939a8806945b2b13b
