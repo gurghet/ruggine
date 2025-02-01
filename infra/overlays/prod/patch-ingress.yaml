@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ruggine-prod
+  namespace: ruggine
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  tls:
+  - hosts:
+    - codecraft.engineering
+    secretName: codecraft-engineering-prod-tls
+  rules:
+  - host: codecraft.engineering
+    http:
+      paths:
+      - path: /url
+        pathType: Prefix
+        backend:
+          service:
+            name: ruggine-service
+            port:
+              name: http
