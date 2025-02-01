@@ -43,8 +43,8 @@ metadata:
   namespace: ruggine
 spec:
   ports:
-  - port: 80
-    targetPort: http
+  - port: 3000
+    targetPort: 3000
     protocol: TCP
     name: http
   selector:
@@ -60,13 +60,13 @@ metadata:
 spec:
   tls:
   - hosts:
-    - ruggine.codecraft.engineering
-    secretName: ruggine-tls
+    - codecraft.engineering
+    secretName: codecraft-engineering-tls
   rules:
-  - host: ruggine.codecraft.engineering
+  - host: codecraft.engineering
     http:
       paths:
-      - path: /
+      - path: /url
         pathType: Prefix
         backend:
           service:
