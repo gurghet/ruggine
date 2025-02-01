@@ -58,6 +58,6 @@ echo -e "${GREEN}✅ Deployment complete!${NC}"
 echo -e "${YELLOW}📊 Current pod status:${NC}"
 kubectl get pods -n ruggine
 
-# Test the endpoint
-echo -e "${YELLOW}🔍 Testing the endpoint...${NC}"
-curl -k https://ruggine.codecraft.engineering
+# Test the deployment
+echo -e "${YELLOW}🔍 Testing the deployment...${NC}"
+curl -k https://codecraft.engineering/url/B5Z
