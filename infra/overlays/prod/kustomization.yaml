@@ -3,3 +3,7 @@ kind: Kustomization
 
 resources:
   - ../../base
+
+images:
+- name: ghcr.io/gurghet/ruggine
+  newTag: latest  # This will be updated by Flux when deploying to prod
