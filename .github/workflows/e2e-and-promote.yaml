@@ -9,6 +9,9 @@ on:
     branches:
       - master
 
+permissions:
+  contents: write
+
 jobs:
   e2e-test:
     runs-on: ubuntu-24.04-arm
