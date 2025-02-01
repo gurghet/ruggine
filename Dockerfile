@@ -1,4 +1,5 @@
-FROM lukemathwalker/cargo-chef:latest-rust-stable AS chef
+FROM rust:slim-bookworm AS chef
+RUN cargo install cargo-chef
 WORKDIR /app
 
 FROM chef AS planner
