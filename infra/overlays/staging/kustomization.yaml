@@ -2,7 +2,10 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - ../../base
+- ../../base
 
 patchesStrategicMerge:
-  - patch-deployment.yaml
+- patch-deployment.yaml
+images:
+- name: ghcr.io/gurghet/ruggine
+  newTag: 518f219272a6100bde80b77836a5ebec1950acd2
