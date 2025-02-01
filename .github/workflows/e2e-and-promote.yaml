@@ -1,0 +1,77 @@
+name: E2E Tests and Production Promotion
+
+on:
+  # Triggered by the docker-deploy workflow
+  workflow_run:
+    workflows: ["Build and Deploy Docker Image"]
+    types:
+      - completed
+    branches:
+      - master
+
+jobs:
+  e2e-test:
+    runs-on: ubuntu-24.04-arm
+    # Only run if the docker-deploy workflow succeeded
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Wait for staging deployment
+        run: |
+          # Wait up to 2 minutes for staging to be ready
+          for i in {1..24}; do
+            if curl -s -f -o /dev/null "https://staging.ruggine.codecraft.engineering/url/B5Z"; then
+              echo "Staging environment is ready!"
+              exit 0
+            fi
+            echo "Waiting for staging environment to be ready... ($i/24)"
+            sleep 5
+          done
+          echo "Staging environment not ready after 2 minutes"
+          exit 1
+
+      - name: Run E2E Tests
+        run: |
+          # Test valid URL redirect
+          RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://staging.ruggine.codecraft.engineering/url/B5Z")
+          if [ "$RESPONSE_CODE" != "302" ]; then
+            echo "Error: Expected 302 redirect, got $RESPONSE_CODE"
+            exit 1
+          fi
+          
+          # Test invalid URL
+          RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://staging.ruggine.codecraft.engineering/url/invalid")
+          if [ "$RESPONSE_CODE" != "302" ]; then
+            echo "Error: Expected 302 redirect for invalid URL, got $RESPONSE_CODE"
+            exit 1
+          fi
+          
+          echo "All E2E tests passed successfully!"
+
+  promote-to-prod:
+    needs: e2e-test
+    runs-on: ubuntu-24.04-arm
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Kustomize
+        uses: imranismail/setup-kustomize@v2
+      
+      - name: Get staging image tag
+        run: |
+          cd infra/overlays/staging
+          IMAGE_TAG=$(kustomize build | grep "image:" | awk -F: '{print $3}')
+          echo "PROMOTE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+      
+      - name: Update production image and commit
+        run: |
+          cd infra/overlays/prod
+          kustomize edit set image ghcr.io/gurghet/ruggine:${{ env.PROMOTE_TAG }}
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add kustomization.yaml
+          git commit -m "promote: update production to ruggine:${{ env.PROMOTE_TAG }}"
+          git push
