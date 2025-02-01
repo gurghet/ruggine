@@ -16,7 +16,7 @@ async fn main() {
 
     // Build our application with routes
     let app = Router::new()
-        .route("/", get(|| async { "URL Shortener Service\n" }))
+        .route("/", get(|| async { "Welcome to the URL Shortener Service v1.0!\n" }))
         .route("/:code", get(redirect_handler));
 
     // Run our app
@@ -45,7 +45,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_root_endpoint() {
-        let app = Router::new().route("/", get(|| async { "URL Shortener Service\n" }));
+        let app = Router::new().route("/", get(|| async { "Welcome to the URL Shortener Service v1.0!\n" }));
 
         let response = app
             .oneshot(Request::builder().uri("/").body(axum::body::Body::empty()).unwrap())
@@ -55,7 +55,7 @@ mod tests {
         assert_eq!(response.status(), StatusCode::OK);
 
         let body = to_bytes(response.into_body(), 1024).await.unwrap();
-        assert_eq!(&body[..], b"URL Shortener Service\n");
+        assert_eq!(&body[..], b"Welcome to the URL Shortener Service v1.0!\n");
     }
 
     #[tokio::test]
