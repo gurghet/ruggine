@@ -21,14 +21,33 @@ echo -e "${YELLOW}⬆️  Pushing Docker images...${NC}"
 docker push ghcr.io/gurghet/ruggine:$GIT_SHA
 docker push ghcr.io/gurghet/ruggine:latest
 
-# Wait for Flux to detect changes
-echo -e "${YELLOW}⏳ Waiting for Flux to detect changes...${NC}"
-flux reconcile source git flux-system
-flux reconcile kustomization ruggine
+# Suspend Flux to prevent it from reverting our changes
+echo -e "${YELLOW}⏸️  Suspending Flux...${NC}"
+flux suspend kustomization ruggine
+
+# Update the deployment image directly
+echo -e "${YELLOW}🔄 Updating deployment image...${NC}"
+kubectl set image deployment/ruggine ruggine=ghcr.io/gurghet/ruggine:$GIT_SHA -n ruggine
 
 # Wait for the deployment to roll out
 echo -e "${YELLOW}🔄 Waiting for deployment to roll out...${NC}"
 kubectl rollout status deployment/ruggine -n ruggine
+
+# Update kustomization.yaml with the new image tag
+echo -e "${YELLOW}📝 Updating kustomization.yaml...${NC}"
+cd infra
+kustomize edit set image ghcr.io/gurghet/ruggine:$GIT_SHA
+cd ..
+
+# Commit and push the changes
+echo -e "${YELLOW}📤 Committing and pushing changes...${NC}"
+git add infra/kustomization.yaml
+git commit -m "chore: update image tag to $GIT_SHA"
+git push
+
+# Resume Flux
+echo -e "${YELLOW}▶️  Resuming Flux...${NC}"
+flux resume kustomization ruggine
 
 echo -e "${GREEN}✅ Deployment complete!${NC}"
 
