@@ -4,8 +4,12 @@ kind: Kustomization
 resources:
 - ../../base
 
-patchesStrategicMerge:
-- patch-deployment.yaml
+patches:
+- path: patch-deployment.yaml
+  target:
+    kind: Ingress
+    name: ruggine
+
 images:
 - name: ghcr.io/gurghet/ruggine
   newTag: 61f24d349b921c8fc45b1c0939a8806945b2b13b
