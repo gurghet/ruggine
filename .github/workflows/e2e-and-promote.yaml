@@ -36,15 +36,15 @@ jobs:
         run: |
           # Test valid URL redirect
           RESPONSE_CODE=$(curl -k -s -o /dev/null -w "%{http_code}" "https://staging.codecraft.engineering/url/B5Z")
-          if [ "$RESPONSE_CODE" != "302" ]; then
-            echo "Error: Expected 302 redirect, got $RESPONSE_CODE"
+          if [ "$RESPONSE_CODE" != "307" ]; then
+            echo "Error: Expected 307 redirect, got $RESPONSE_CODE"
             exit 1
           fi
           
           # Test invalid URL
           RESPONSE_CODE=$(curl -k -s -o /dev/null -w "%{http_code}" "https://staging.codecraft.engineering/url/invalid")
-          if [ "$RESPONSE_CODE" != "302" ]; then
-            echo "Error: Expected 302 redirect for invalid URL, got $RESPONSE_CODE"
+          if [ "$RESPONSE_CODE" != "307" ]; then
+            echo "Error: Expected 307 redirect for invalid URL, got $RESPONSE_CODE"
             exit 1
           fi
           
