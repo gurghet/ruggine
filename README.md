@@ -9,5 +9,5 @@ A URL shortener service built with Rust and deployed on Kubernetes.
 - GitOps deployment with Flux
 
 ## Environments
-- Staging: https://staging.codecraft.engineering
+- Staging: https://staging.codecraft.engineering (uses Let's Encrypt staging certificates)
 - Production: https://codecraft.engineering
