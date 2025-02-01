@@ -12,4 +12,4 @@ patches:
 
 images:
 - name: ghcr.io/gurghet/ruggine
-  newTag: a291a90e9d9d002a6229efa8d5883c6d376d47bd
+  newTag: 08ff64d4183b6e8dcdfba86df75e72c85b912ffa
