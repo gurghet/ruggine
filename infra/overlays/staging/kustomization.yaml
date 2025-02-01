@@ -9,7 +9,3 @@ patches:
   target:
     kind: Ingress
     name: ruggine
-
-images:
-- name: ghcr.io/gurghet/ruggine
-  newTag: 4a425f498e0e9c56e91df76746e991db9131f13a
