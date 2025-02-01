@@ -12,4 +12,4 @@ commonLabels:
 
 images:
 - name: ghcr.io/gurghet/ruggine
-  newTag: latest
+  newTag: ca0dbe5
