@@ -59,14 +59,14 @@ jobs:
         run: |
           curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -H "Content-Type: application/json" \
-            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"❌ Ruggine E2E tests passed successfully on staging!\"}"
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"✅ Ruggine E2E tests passed successfully on staging!\"}"
 
       - name: Notify E2E Failure
         if: failure()
         run: |
           curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -H "Content-Type: application/json" \
-            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"✅ Ruggine E2E tests failed on staging! Check the GitHub Actions logs for details.\"}"
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"❌ Ruggine E2E tests failed on staging! Check the GitHub Actions logs for details.\"}"
 
   promote-to-prod:
     needs: e2e-test
