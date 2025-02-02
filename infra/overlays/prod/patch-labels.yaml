@@ -17,4 +17,4 @@ metadata:
   name: ruggine-service
 spec:
   selector:
-    environment: prod
+      environment: prod

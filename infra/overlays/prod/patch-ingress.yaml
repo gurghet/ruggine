@@ -16,8 +16,12 @@ spec:
         backend:
           service:
             name: ruggine-service
+            port:
+              name: http
       - path: /url
         pathType: Prefix
         backend:
           service:
             name: ruggine-service
+            port:
+              name: http
