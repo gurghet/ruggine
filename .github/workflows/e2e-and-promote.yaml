@@ -117,11 +117,11 @@ jobs:
         run: |
           curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -H "Content-Type: application/json" \
-            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \" Ruggine successfully promoted to production with tag ${{ env.PROMOTE_TAG }}\"}"
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"🚀 Ruggine successfully promoted to production with tag ${{ env.PROMOTE_TAG }}\"}"
 
       - name: Notify Production Promotion Failure
         if: failure()
         run: |
           curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -H "Content-Type: application/json" \
-            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \" Failed to promote Ruggine to production! Check the GitHub Actions logs for details.\"}"
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"❌ Failed to promote Ruggine to production! Check the GitHub Actions logs for details.\"}"
