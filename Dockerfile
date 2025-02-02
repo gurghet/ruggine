@@ -2,7 +2,6 @@
 FROM lukemathwalker/cargo-chef:latest AS chef
 # Enable parallel compilation and optimization
 ENV CARGO_BUILD_JOBS=8
-ENV RUSTFLAGS="-C target-cpu=native"
 ENV CARGO_INCREMENTAL=1
 WORKDIR app
 
