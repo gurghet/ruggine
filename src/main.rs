@@ -8,6 +8,19 @@ use axum::serve;
 use std::net::SocketAddr;
 use std::collections::HashMap;
 
+const STATIC_HTML: &str = r#"<!DOCTYPE html>
+<html>
+<head>
+    <title>Hi</title>
+</head>
+<body>
+</body>
+</html>"#;
+
+async fn root_handler() -> &'static str {
+    STATIC_HTML
+}
+
 #[tokio::main]
 async fn main() {
     // Create static URL mappings
@@ -16,6 +29,7 @@ async fn main() {
 
     // Build our application with routes
     let app = Router::new()
+        .route("/", get(root_handler))
         .route("/url/:code", get(url_redirect_handler));
 
     // Run our app
@@ -38,6 +52,7 @@ mod tests {
     use axum::{
         http::{Request, StatusCode},
         Router,
+        body::to_bytes,
     };
     use tower::ServiceExt;
 
@@ -96,5 +111,24 @@ mod tests {
             .unwrap();
 
         assert_eq!(response.status(), StatusCode::NOT_FOUND);
+    }
+
+    #[tokio::test]
+    async fn test_root_handler() {
+        let app = Router::new()
+            .route("/", get(root_handler));
+
+        let response = app
+            .oneshot(Request::builder().uri("/").body(axum::body::Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::OK);
+        
+        let body = to_bytes(response.into_body(), 1024 * 32).await.unwrap();
+        assert_eq!(
+            String::from_utf8(body.to_vec()).unwrap(),
+            STATIC_HTML
+        );
     }
 }
