@@ -2,7 +2,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ruggine
-  namespace: ruggine
 spec:
   tls:
   - hosts:
@@ -12,6 +11,13 @@ spec:
   - host: codecraft.engineering
     http:
       paths:
-      - backend:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: prod-ruggine-service
+      - path: /url
+        pathType: Prefix
+        backend:
           service:
             name: prod-ruggine-service

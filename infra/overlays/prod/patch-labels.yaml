@@ -5,13 +5,10 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: ruggine
       environment: prod
-    environment: prod
   template:
     metadata:
       labels:
-        app: ruggine
         environment: prod
 ---
 apiVersion: v1
@@ -20,5 +17,4 @@ metadata:
   name: ruggine-service
 spec:
   selector:
-    app: ruggine
     environment: prod
