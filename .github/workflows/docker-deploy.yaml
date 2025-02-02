@@ -40,6 +40,8 @@ jobs:
           file: ./Dockerfile
           push: ${{ github.event_name == 'push' }}
           platforms: linux/arm64
+          build-args: |
+            VERSION=${{ github.sha }}
           tags: |
             ghcr.io/gurghet/ruggine:${{ github.sha }}
             ghcr.io/gurghet/ruggine:latest
@@ -56,6 +58,11 @@ jobs:
       - name: Update staging image tag and commit
         if: github.event_name == 'push'
         run: |
+          # Debug information
+          echo "Current SHA: ${{ github.sha }}"
+          echo "Short SHA: ${{ github.sha_short }}"
+          echo "Ref: ${{ github.ref }}"
+          
           cd infra/overlays/staging
           kustomize edit set image ghcr.io/gurghet/ruggine:${{ github.sha }}
           git config --global user.name 'GitHub Actions'

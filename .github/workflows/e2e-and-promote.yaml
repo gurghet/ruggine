@@ -23,40 +23,52 @@ jobs:
       
       - name: Wait for staging deployment
         run: |
-          # Wait up to 2 minutes for staging to be ready
+          # Debug information
+          echo "Workflow run id: ${{ github.event.workflow_run.id }}"
+          echo "Workflow name: ${{ github.event.workflow_run.name }}"
+          echo "Workflow sha: ${{ github.event.workflow_run.head_sha }}"
+          echo "Current sha: ${{ github.sha }}"
+          
+          # Get the SHA of the docker-deploy workflow that triggered this
+          EXPECTED_VERSION="${{ github.event.workflow_run.head_sha }}"
+          echo "Waiting for version $EXPECTED_VERSION to be deployed..."
+          
+          # Wait up to 2 minutes for staging to be ready with correct version
           for i in {1..24}; do
-            if curl -k -s -f -o /dev/null "https://staging.codecraft.engineering/url/B5Z"; then
-              echo "Staging environment is ready!"
-              exit 0
+            RESPONSE=$(curl -s -k https://staging.codecraft.engineering/version)
+            if [ $? -eq 0 ]; then
+              CURRENT_VERSION=$(echo "$RESPONSE" | jq -r '.version')
+              if [ "$CURRENT_VERSION" = "$EXPECTED_VERSION" ]; then
+                echo " Staging environment is ready with correct version!"
+                exit 0
+              fi
+              echo " Wrong version: expected $EXPECTED_VERSION, got $CURRENT_VERSION"
             fi
             echo "Waiting for staging environment to be ready... ($i/24)"
             sleep 5
           done
-          echo "Staging environment not ready after 2 minutes"
+          echo "Staging environment not ready with correct version after 2 minutes"
           exit 1
 
       - name: Run E2E Tests
         run: |
           # Test valid URL redirect
-          RESPONSE_CODE=$(curl -k -s -o /dev/null -w "%{http_code}" "https://staging.codecraft.engineering/url/B5Z")
-          if [ "$RESPONSE_CODE" != "307" ]; then
-            echo "Error: Expected 307 redirect, got $RESPONSE_CODE"
+          http --verify=no -h staging.codecraft.engineering/url/B5Z | grep -q "HTTP/2 307" || {
+            echo "Error: Expected 307 redirect"
             exit 1
-          fi
+          }
           
           # Test invalid URL
-          RESPONSE_CODE=$(curl -k -s -o /dev/null -w "%{http_code}" "https://staging.codecraft.engineering/url/invalid")
-          if [ "$RESPONSE_CODE" != "307" ]; then
-            echo "Error: Expected 307 redirect for invalid URL, got $RESPONSE_CODE"
+          http --verify=no -h staging.codecraft.engineering/url/invalid | grep -q "HTTP/2 307" || {
+            echo "Error: Expected 307 redirect for invalid URL"
             exit 1
-          fi
+          }
           
           # Test root handler
-          RESPONSE_CODE=$(curl -k -s -o /dev/null -w "%{http_code}" "https://staging.codecraft.engineering/")
-          if [ "$RESPONSE_CODE" != "200" ]; then
-            echo "Error: Expected 200 OK response from root handler, got $RESPONSE_CODE"
+          http --verify=no -h staging.codecraft.engineering/ | grep -q "HTTP/2 200" || {
+            echo "Error: Expected 200 OK response from root handler"
             exit 1
-          fi
+          }
           
           echo "All E2E tests passed successfully!"
 
@@ -65,14 +77,14 @@ jobs:
         run: |
           curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -H "Content-Type: application/json" \
-            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"✅ Ruggine E2E tests passed successfully on staging!\"}"
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \" Ruggine E2E tests passed successfully on staging!\"}"
 
       - name: Notify E2E Failure
         if: failure()
         run: |
           curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -H "Content-Type: application/json" \
-            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"❌ Ruggine E2E tests failed on staging! Check the GitHub Actions logs for details.\"}"
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \" Ruggine E2E tests failed on staging! Check the GitHub Actions logs for details.\"}"
 
   promote-to-prod:
     needs: e2e-test
@@ -105,11 +117,11 @@ jobs:
         run: |
           curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -H "Content-Type: application/json" \
-            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"🚀 Ruggine successfully promoted to production with tag ${{ env.PROMOTE_TAG }}\"}"
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \" Ruggine successfully promoted to production with tag ${{ env.PROMOTE_TAG }}\"}"
 
       - name: Notify Production Promotion Failure
         if: failure()
         run: |
           curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -H "Content-Type: application/json" \
-            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"❌ Failed to promote Ruggine to production! Check the GitHub Actions logs for details.\"}"
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \" Failed to promote Ruggine to production! Check the GitHub Actions logs for details.\"}"
