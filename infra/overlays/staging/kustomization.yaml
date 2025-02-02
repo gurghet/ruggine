@@ -17,4 +17,4 @@ commonLabels:
 
 images:
 - name: ghcr.io/gurghet/ruggine
-  newTag: 6e12d29b33a224276fec86cccf5cf7ec7512476a
+  newTag: d94127d77b53d45a145952eda7af02793df0853c
