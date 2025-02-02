@@ -20,6 +20,25 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
+      # Improved Rust caching for tests
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          # Cache test artifacts separately
+          prefix-key: "rust-test"
+          # Include test-specific artifacts
+          cache-targets: true
+          # Cache both debug and release builds for tests
+          cache-on-failure: true
+          # Add test-specific directories
+          cache-directories: |
+            target/debug/deps
+            target/debug/build
+            target/debug/.fingerprint
+      
+      - name: Run unit tests
+        run: cargo test
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       
@@ -30,9 +49,6 @@ jobs:
           username: gurghet
           password: ${{ secrets.GITHUB_TOKEN }}
       
-      - name: Run unit tests
-        run: cargo test
-
       - name: Build and push Docker images
         uses: docker/build-push-action@v5.1.0
         with:
