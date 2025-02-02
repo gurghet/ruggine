@@ -53,19 +53,19 @@ jobs:
       - name: Run E2E Tests
         run: |
           # Test valid URL redirect
-          http --verify=no -h staging.codecraft.engineering/url/B5Z | grep -q "HTTP/2 307" || {
+          curl -k -I staging.codecraft.engineering/url/B5Z | grep -q "HTTP/2 307" || {
             echo "Error: Expected 307 redirect"
             exit 1
           }
           
           # Test invalid URL
-          http --verify=no -h staging.codecraft.engineering/url/invalid | grep -q "HTTP/2 307" || {
+          curl -k -I staging.codecraft.engineering/url/invalid | grep -q "HTTP/2 307" || {
             echo "Error: Expected 307 redirect for invalid URL"
             exit 1
           }
           
           # Test root handler
-          http --verify=no -h staging.codecraft.engineering/ | grep -q "HTTP/2 200" || {
+          curl -k -I staging.codecraft.engineering/ | grep -q "HTTP/2 200" || {
             echo "Error: Expected 200 OK response from root handler"
             exit 1
           }
