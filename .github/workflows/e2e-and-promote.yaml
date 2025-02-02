@@ -52,25 +52,7 @@ jobs:
 
       - name: Run E2E Tests
         run: |
-          # Test valid URL redirect
-          curl -k -I staging.codecraft.engineering/url/B5Z | grep -q "HTTP/2 307" || {
-            echo "Error: Expected 307 redirect"
-            exit 1
-          }
-          
-          # Test invalid URL
-          curl -k -I staging.codecraft.engineering/url/invalid | grep -q "HTTP/2 307" || {
-            echo "Error: Expected 307 redirect for invalid URL"
-            exit 1
-          }
-          
-          # Test root handler
-          curl -k -I staging.codecraft.engineering/ | grep -q "HTTP/2 200" || {
-            echo "Error: Expected 200 OK response from root handler"
-            exit 1
-          }
-          
-          echo "All E2E tests passed successfully!"
+          ./e2e-scripts/tests.sh
 
       - name: Notify E2E Success
         if: success()
