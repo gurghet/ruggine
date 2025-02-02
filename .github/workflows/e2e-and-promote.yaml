@@ -51,6 +51,13 @@ jobs:
             exit 1
           fi
           
+          # Test root handler
+          RESPONSE=$(http --verify=no staging.codecraft.engineering/ | jq -r '.status')
+          if [ "$RESPONSE" != "200" ]; then
+            echo "Error: Expected 200 OK response from root handler, got $RESPONSE"
+            exit 1
+          fi
+          
           echo "All E2E tests passed successfully!"
 
       - name: Notify E2E Success
