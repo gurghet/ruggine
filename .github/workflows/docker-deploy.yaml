@@ -30,6 +30,9 @@ jobs:
           username: gurghet
           password: ${{ secrets.GITHUB_TOKEN }}
       
+      - name: Run unit tests
+        run: cargo test
+
       - name: Build and push Docker images
         uses: docker/build-push-action@v5.1.0
         with:
