@@ -53,6 +53,20 @@ jobs:
           
           echo "All E2E tests passed successfully!"
 
+      - name: Notify E2E Success
+        if: success()
+        run: |
+          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"✅ Ruggine E2E tests passed successfully on staging!\"}"
+
+      - name: Notify E2E Failure
+        if: failure()
+        run: |
+          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"❌ Ruggine E2E tests failed on staging! Check the GitHub Actions logs for details.\"}"
+
   promote-to-prod:
     needs: e2e-test
     runs-on: ubuntu-24.04-arm
@@ -78,3 +92,17 @@ jobs:
           git add kustomization.yaml
           git commit -m "promote: update production to ruggine:${{ env.PROMOTE_TAG }}"
           git push
+
+      - name: Notify Production Promotion Success
+        if: success()
+        run: |
+          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"🚀 Ruggine successfully promoted to production with tag ${{ env.PROMOTE_TAG }}\"}"
+
+      - name: Notify Production Promotion Failure
+        if: failure()
+        run: |
+          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"❌ Failed to promote Ruggine to production! Check the GitHub Actions logs for details.\"}"
