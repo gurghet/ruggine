@@ -52,9 +52,9 @@ jobs:
           fi
           
           # Test root handler
-          RESPONSE=$(http --verify=no staging.codecraft.engineering/ | jq -r '.status')
-          if [ "$RESPONSE" != "200" ]; then
-            echo "Error: Expected 200 OK response from root handler, got $RESPONSE"
+          RESPONSE_CODE=$(curl -k -s -o /dev/null -w "%{http_code}" "https://staging.codecraft.engineering/")
+          if [ "$RESPONSE_CODE" != "200" ]; then
+            echo "Error: Expected 200 OK response from root handler, got $RESPONSE_CODE"
             exit 1
           fi
           
