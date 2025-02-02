@@ -14,10 +14,6 @@ spec:
   - host: staging.codecraft.engineering
     http:
       paths:
-      - path: /url
-        pathType: Prefix
-        backend:
+      - backend:
           service:
             name: staging-ruggine-service
-            port:
-              name: http
