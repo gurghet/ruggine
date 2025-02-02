@@ -1,8 +1,9 @@
 use axum::{
     routing::get,
     Router,
-    response::Redirect,
+    response::{Redirect, Html},
     extract::Path,
+    http::header::CONTENT_TYPE,
 };
 use axum::serve;
 use std::net::SocketAddr;
@@ -17,8 +18,8 @@ const STATIC_HTML: &str = r#"<!DOCTYPE html>
 </body>
 </html>"#;
 
-async fn root_handler() -> &'static str {
-    STATIC_HTML
+async fn root_handler() -> Html<&'static str> {
+    Html(STATIC_HTML)
 }
 
 #[tokio::main]
@@ -124,6 +125,11 @@ mod tests {
             .unwrap();
 
         assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(
+            response.headers().get(CONTENT_TYPE).unwrap(),
+            "text/html; charset=utf-8",
+            "Root endpoint should return HTML content type"
+        );
         
         let body = to_bytes(response.into_body(), 1024 * 32).await.unwrap();
         assert_eq!(
