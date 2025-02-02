@@ -2113,6 +2113,8 @@ dependencies = [
  "axum",
  "base32",
  "hyper",
+ "serde",
+ "serde_json",
  "sqlx",
  "tokio",
  "tower",
