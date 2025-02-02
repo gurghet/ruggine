@@ -17,9 +17,9 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: staging-ruggine-service
+            name: ruggine-service
       - path: /url
         pathType: Prefix
         backend:
           service:
-            name: staging-ruggine-service
+            name: ruggine-service
