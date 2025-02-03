@@ -7,17 +7,23 @@ This directory contains the Kubernetes infrastructure configuration for the Rugg
 ```
 infra/
 ├── base/                 # Base configuration shared across all environments
-│   ├── deployment.yaml   # Main deployment, service, and ingress definitions
+│   ├── deployment.yaml   # Main deployment configuration
+│   ├── ingress.yaml     # Ingress configuration with TLS
 │   ├── namespace.yaml    # Namespace configuration
 │   ├── doppler-secret.yaml # Doppler secret configuration
 │   └── kustomization.yaml # Base kustomization file
+├── flux/                 # Flux GitOps configuration
+│   ├── staging.yaml      # Staging environment Flux config
+│   └── prod.yaml         # Production environment Flux config
 └── overlays/            # Environment-specific configurations
     ├── staging/         # Staging environment
     │   ├── kustomization.yaml    # Staging kustomize config
-    │   └── patch-deployment.yaml # Staging-specific patches
+    │   ├── patch-ingress.yaml    # Staging ingress patches
+    │   └── patch-labels.yaml     # Staging label patches
     └── prod/            # Production environment
         ├── kustomization.yaml    # Production kustomize config
-        └── patch-deployment.yaml # Production-specific patches
+        ├── patch-ingress.yaml    # Production ingress patches
+        └── patch-labels.yaml     # Production label patches
 ```
 
 ## Base Configuration
@@ -25,7 +31,7 @@ infra/
 The base configuration in `base/` defines the core components:
 - Deployment with resource limits and security context
 - Service exposing port 3000
-- Ingress with TLS configuration via cert-manager
+- Ingress with TLS configuration via Let's Encrypt
 - Doppler secret for configuration management
 
 ## Environment Overlays
@@ -33,23 +39,23 @@ The base configuration in `base/` defines the core components:
 ### Staging Environment
 Located in `overlays/staging/`:
 - Uses staging.codecraft.engineering domain
-- Runs 2 replicas for redundancy
+- Runs 1 replica
 - Uses staging-specific labels for isolation
-- Maintains separate TLS certificate
+- Uses Let's Encrypt staging certificates
 
 ### Production Environment
 Located in `overlays/prod/`:
 - Uses codecraft.engineering domain
 - Follows stable release process
 - Production-grade configuration
-- Separate TLS certificate management
+- Uses Let's Encrypt production certificates
 
 ## GitOps Workflow
 
 1. Base configuration provides the template
 2. Environment overlays patch the base configuration
 3. Changes are made through git commits
-4. GitOps operator (e.g., Flux/ArgoCD) applies changes
+4. GitOps operator (Flux) applies changes
 5. No direct kubectl commands needed
 
 ## Usage

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,21 +9,26 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
         body {
             font-family: 'Inter', sans-serif;
         }
     </style>
 </head>
+
 <body>
-    <div class="min-h-screen bg-gradient-to-br from-gray-900 to-blue-900 flex items-center justify-center p-4">
+    <div class="min-h-screen bg-[#0b1e3f] flex items-center justify-center p-4">
         <div class="bg-gray-900 rounded-lg shadow-2xl p-8 max-w-2xl w-full border border-teal-500/20">
             <div class="space-y-6">
+                <!-- Company Logo -->
+                <div class="text-center mb-6">
+                    <img src="/static/CodeCraft%20Engineering%20logo.png" alt="CodeCraft Engineering" class="h-16 mx-auto">
+                </div>
                 <!-- Header with Image -->
                 <div class="text-center border-b border-teal-500/20 pb-6">
                     <div class="flex justify-center mb-4">
-                        <img src="https://i.imgur.com/lprHQyp.jpg" 
-                             alt="Andrea Passaglia"
-                             class="rounded-full w-32 h-32 object-cover border-4 border-teal-500/30 shadow-2xl">
+                        <img src="https://i.imgur.com/lprHQyp.jpg" alt="Andrea Passaglia"
+                            class="rounded-full w-32 h-32 object-cover border-4 border-teal-500/30 shadow-2xl">
                     </div>
                     <h1 class="text-3xl font-bold text-white">Andrea Passaglia</h1>
                     <p class="text-xl text-teal-400 mt-2">Software Engineer</p>
@@ -35,24 +41,24 @@
                         <i data-lucide="phone" class="w-5 h-5 text-teal-400"></i>
                         <p class="text-gray-300">+39 3926152521</p>
                     </div>
-                    
+
                     <div class="flex items-center space-x-3">
                         <i data-lucide="mail" class="w-5 h-5 text-teal-400"></i>
-                        <a href="mailto:andrea.passaglia@codecraft.engineering" 
-                           class="text-blue-400 hover:text-blue-300 transition-colors">
-                            andrea.passaglia@codecraft.engineering
+                        <a href="mailto:ap@codecraft.engineering"
+                            class="text-blue-400 hover:text-blue-300 transition-colors">
+                            ap@codecraft.engineering
                         </a>
                     </div>
-                    
+
                     <div class="flex items-center space-x-3">
                         <i data-lucide="map-pin" class="w-5 h-5 text-teal-400"></i>
                         <p class="text-gray-300">via di Montesano 18</p>
                     </div>
-                    
+
                     <div class="flex items-center space-x-3">
                         <i data-lucide="globe" class="w-5 h-5 text-teal-400"></i>
-                        <a href="https://codecraft.engineering" 
-                           class="text-blue-400 hover:text-blue-300 transition-colors">
+                        <a href="https://codecraft.engineering"
+                            class="text-blue-400 hover:text-blue-300 transition-colors">
                             codecraft.engineering
                         </a>
                     </div>
@@ -67,16 +73,20 @@
                 <div class="border-t border-teal-500/20 pt-6">
                     <h2 class="text-xl font-semibold text-white mb-3">Specialties</h2>
                     <div class="flex flex-wrap gap-2">
-                        <span class="bg-teal-500/10 text-teal-300 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-500/20 transition-colors border border-teal-500/30">
+                        <span
+                            class="bg-teal-500/10 text-teal-300 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-500/20 transition-colors border border-teal-500/30">
                             Distributed Systems
                         </span>
-                        <span class="bg-teal-500/10 text-teal-300 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-500/20 transition-colors border border-teal-500/30">
+                        <span
+                            class="bg-teal-500/10 text-teal-300 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-500/20 transition-colors border border-teal-500/30">
                             Functional Programming
                         </span>
-                        <span class="bg-teal-500/10 text-teal-300 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-500/20 transition-colors border border-teal-500/30">
+                        <span
+                            class="bg-teal-500/10 text-teal-300 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-500/20 transition-colors border border-teal-500/30">
                             Cybersecurity
                         </span>
-                        <span class="bg-teal-500/10 text-teal-300 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-500/20 transition-colors border border-teal-500/30">
+                        <span
+                            class="bg-teal-500/10 text-teal-300 px-3 py-1 rounded-full text-sm font-medium hover:bg-teal-500/20 transition-colors border border-teal-500/30">
                             AI
                         </span>
                     </div>
@@ -89,4 +99,5 @@
         lucide.createIcons();
     </script>
 </body>
+
 </html>

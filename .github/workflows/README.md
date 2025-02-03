@@ -5,7 +5,7 @@ This directory contains the CI/CD workflows for the Ruggine URL shortener servic
 ## Workflows
 
 ### 1. Build and Deploy Docker Image (`docker-deploy.yaml`)
-Triggered on push to master branch.
+Triggered on push to master branch and pull requests to master.
 
 **Purpose:**
 - Builds the Rust application
@@ -13,13 +13,14 @@ Triggered on push to master branch.
 - Updates staging environment
 
 **Key Features:**
-- Uses ARM64 runners for native builds
+- Uses ARM64 runners (ubuntu-24.04-arm)
 - Multi-stage Docker builds for optimization
 - Automatic staging deployment via GitOps
 - GitHub Container Registry integration
+- Concurrency control to cancel in-progress builds
 
 ### 2. E2E Tests and Production Promotion (`e2e-and-promote.yaml`)
-Triggered after successful `docker-deploy.yaml` completion.
+Triggered after successful `docker-deploy.yaml` completion on master branch.
 
 **Purpose:**
 - Tests staging environment
@@ -30,6 +31,8 @@ Triggered after successful `docker-deploy.yaml` completion.
 2. Runs E2E tests:
    - Valid URL redirect test
    - Invalid URL handling test
+   - Static file serving test
+   - Health check test
 3. If tests pass:
    - Gets image tag from staging
    - Updates production configuration
@@ -53,17 +56,23 @@ graph TD
 - All changes through git commits
 - ARM64 optimized builds
 - Separate staging/prod environments
+- Automated staging to production promotion
 
 ## Usage
 
-The workflows run automatically on push to master. No manual intervention required unless:
+The workflows run automatically on:
+- Push to master branch
+- Pull requests to master (only build and test)
+
+No manual intervention required unless:
 - E2E tests fail
 - Manual production rollback needed
 - Infrastructure changes required
 
 ## Runner Requirements
 
-Both workflows use ARM64 runners (`ubuntu-24.04-arm`) for:
+All workflows use ARM64 runners (`ubuntu-24.04-arm`) for:
 - Native ARM64 builds
 - Better performance
 - Reduced resource usage
+- Consistent build environment
