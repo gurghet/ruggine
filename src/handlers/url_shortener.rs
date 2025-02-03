@@ -54,4 +54,17 @@ mod tests {
         let body = to_bytes(response.into_body(), 1024).await.unwrap();
         assert_eq!(&body[..], b"URL shortcode not found");
     }
+
+    #[tokio::test]
+    async fn test_non_url_path_returns_404() {
+        let app = Router::new()
+            .route("/:code", get(url_redirect_handler));
+
+        let response = app
+            .oneshot(Request::builder().uri("/some-random-path").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::NOT_FOUND);
+    }
 }
