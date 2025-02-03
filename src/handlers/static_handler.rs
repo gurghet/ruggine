@@ -1,26 +1,28 @@
-use axum::response::Html;
+use axum::{
+    response::{Html, IntoResponse},
+    http::StatusCode,
+};
+use std::fs;
 
 // Constants
-const STATIC_HTML: &str = r#"<!DOCTYPE html>
-<html>
-<head>
-    <title>Hi</title>
-</head>
-<body>
-</body>
-</html>"#;
 
-pub async fn root_handler() -> Html<&'static str> {
-    Html(STATIC_HTML)
+pub async fn root_handler() -> impl IntoResponse {
+    match fs::read_to_string("static/index.html") {
+        Ok(content) => Html(content).into_response(),
+        Err(_) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "Failed to load static content"
+        ).into_response(),
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use axum::{
+        body::Body,
         http::{Request, StatusCode},
         Router,
-        body::to_bytes,
         routing::get,
     };
     use tower::ServiceExt;
@@ -32,7 +34,7 @@ mod tests {
             .route("/", get(root_handler));
 
         let response = app
-            .oneshot(Request::builder().uri("/").body(axum::body::Body::empty()).unwrap())
+            .oneshot(Request::builder().uri("/").body(Body::empty()).unwrap())
             .await
             .unwrap();
 
@@ -42,11 +44,11 @@ mod tests {
             "text/html; charset=utf-8",
             "Root endpoint should return HTML content type"
         );
-        
-        let body = to_bytes(response.into_body(), 1024 * 32).await.unwrap();
-        assert_eq!(
-            String::from_utf8(body.to_vec()).unwrap(),
-            STATIC_HTML
-        );
+
+        let body = axum::body::to_bytes(response.into_body(), usize::MAX)
+            .await
+            .unwrap();
+        let content = String::from_utf8(body.to_vec()).unwrap();
+        assert!(content.starts_with("<!DOCTYPE html>"));
     }
 }

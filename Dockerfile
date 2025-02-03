@@ -34,6 +34,10 @@ RUN apt-get update && \
 WORKDIR /app
 
 RUN useradd -r -u 1001 appuser
+
+# Copy static files before changing user
+COPY --chmod=644 static /app/static/
+
 USER appuser
 
 COPY --from=builder --chmod=755 /app/target/release/url_shortener /app/
