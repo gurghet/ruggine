@@ -2,9 +2,7 @@ use axum::{
     response::{Redirect, IntoResponse},
     extract::Path,
     http::StatusCode,
-    body::{Body, to_bytes},
 };
-use tower::ServiceExt;
 
 pub async fn url_redirect_handler(Path(code): Path<String>) -> impl IntoResponse {
     match code.as_str() {
@@ -17,10 +15,12 @@ pub async fn url_redirect_handler(Path(code): Path<String>) -> impl IntoResponse
 mod tests {
     use super::*;
     use axum::{
+        body::{Body, to_bytes},
         http::Request,
         Router,
         routing::get,
     };
+    use tower::ServiceExt;
 
     #[tokio::test]
     async fn test_valid_redirect() {
