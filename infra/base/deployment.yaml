@@ -35,6 +35,14 @@ spec:
           limits:
             memory: "128Mi"
             cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: http
 ---
 apiVersion: v1
 kind: Service
