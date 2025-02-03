@@ -38,7 +38,7 @@ pub fn create_router() -> Router {
         .route("/static/*file", get(|path: Path<String>| async move {
             static_file_handler(&path.0).await
         }))
-        .route("/:code", get(url_redirect_handler))
+        .route("/url/:code", get(url_redirect_handler))
         .fallback(|_req: Request<Body>| async move {
             (StatusCode::NOT_FOUND, "Not Found").into_response()
         })
@@ -111,5 +111,18 @@ mod tests {
         // Check that we get a proper error message
         let body = axum::body::to_bytes(response.into_body(), 1024).await.unwrap();
         assert_eq!(&body[..], b"File not found");
+    }
+
+    #[tokio::test]
+    async fn test_url_shortener_requires_url_prefix() {
+        let app = create_router();
+
+        // This should return 404 because it's missing the /url/ prefix
+        let response = app
+            .oneshot(Request::builder().uri("/B5Z").body(Body::empty()).unwrap())
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::NOT_FOUND);
     }
 }
