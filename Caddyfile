@@ -1,8 +1,0 @@
-:3001 {
-    root * static
-    file_server
-    handle /static/* {
-        uri strip_prefix /static
-        file_server
-    }
-}
