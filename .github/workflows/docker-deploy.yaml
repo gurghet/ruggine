@@ -94,3 +94,17 @@ jobs:
           tag_name: release-${{ github.sha }}
           name: Release ${{ github.sha }}
           generate_release_notes: true
+
+      - name: Notify Deploy Success
+        if: success()
+        run: |
+          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"🚀 Ruggine Docker image built and deployed successfully! Tag: ${{ github.sha }}\"}"
+
+      - name: Notify Deploy Failure
+        if: failure()
+        run: |
+          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -H "Content-Type: application/json" \
+            -d "{\"chat_id\": \"${{ secrets.TELEGRAM_CHAT_ID }}\", \"text\": \"💥 Ruggine Docker build/deploy failed! Check the GitHub Actions logs for details.\"}"

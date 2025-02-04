@@ -1,7 +1,6 @@
 FROM lukemathwalker/cargo-chef:latest AS chef
 # Adjust build jobs based on architecture
-ARG CARGO_BUILD_JOBS=4
-ENV CARGO_BUILD_JOBS=${CARGO_BUILD_JOBS}
+ENV CARGO_BUILD_JOBS=8
 ENV CARGO_INCREMENTAL=1
 WORKDIR app
 
@@ -29,8 +28,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         ca-certificates \
         libssl3 \
-        libsqlite3-0 \
-        libsqlite3-dev && \
+        libsqlite3-0 && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean
 
