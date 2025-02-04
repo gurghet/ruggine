@@ -43,7 +43,7 @@ check_response "staging.codecraft.engineering/static/images/nonexistent.png" "40
 check_response "staging.codecraft.engineering/static/random.txt" "404" "Not Found" "Access to non-image file returns 404"
 
 # Test utility endpoints
-check_response "staging.codecraft.engineering/healthz" "200" "OK" "Health check endpoint"
+check_response "staging.codecraft.engineering/healthz" "200" "ok" "Health check endpoint"
 check_response "staging.codecraft.engineering/version" "200" "" "Version endpoint"
 
 echo "All tests passed! "
