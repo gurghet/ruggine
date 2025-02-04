@@ -38,6 +38,9 @@ pub fn create_router() -> Router {
         .route("/static/*file", get(|path: Path<String>| async move {
             static_file_handler(&path.0).await
         }))
+        .route("/images/*file", get(|path: Path<String>| async move {
+            static_file_handler(&path.0).await
+        }))
         .route("/url/:code", get(url_redirect_handler))
         .fallback(|_req: Request<Body>| async move {
             (StatusCode::NOT_FOUND, "Not Found").into_response()

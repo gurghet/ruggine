@@ -40,7 +40,7 @@ cleanup() {
     pkill -f url_shortener 2>/dev/null || true
 }
 
-# Set up cleanup on script exit
+# Set up cleanup on exit
 trap cleanup EXIT
 
 # Kill any existing server
