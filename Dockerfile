@@ -35,8 +35,8 @@ WORKDIR /app
 
 RUN useradd -r -u 1001 appuser
 
-# Copy static files before changing user
-COPY --chmod=644 static /app/static/
+# Copy static files with correct ownership and permissions
+COPY --chown=appuser:appuser static /app/static/
 
 USER appuser
 
