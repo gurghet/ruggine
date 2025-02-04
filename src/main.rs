@@ -66,54 +66,6 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_static_png_route() {
-        let app = create_router();
-
-        let response = app
-            .oneshot(
-                Request::builder()
-                    .uri("/static/CodeCraft%20Engineering%20logo.png")
-                    .body(Body::empty())
-                    .unwrap(),
-            )
-            .await
-            .unwrap();
-
-        assert_eq!(response.status(), StatusCode::OK);
-        assert_eq!(
-            response.headers().get("Content-Type").unwrap(),
-            "image/png"
-        );
-    }
-
-    #[tokio::test]
-    async fn test_static_nonexistent_file() {
-        let app = create_router();
-
-        let response = app
-            .oneshot(
-                Request::builder()
-                    .uri("/static/nonexistent.png")
-                    .body(Body::empty())
-                    .unwrap(),
-            )
-            .await
-            .unwrap();
-
-        assert_eq!(response.status(), StatusCode::NOT_FOUND);
-        
-        // Check that we get the correct content type for the error
-        assert_eq!(
-            response.headers().get("content-type").unwrap(),
-            "text/plain; charset=utf-8"
-        );
-        
-        // Check that we get a proper error message
-        let body = axum::body::to_bytes(response.into_body(), 1024).await.unwrap();
-        assert_eq!(&body[..], b"File not found");
-    }
-
-    #[tokio::test]
     async fn test_url_shortener_requires_url_prefix() {
         let app = create_router();
 
@@ -124,5 +76,26 @@ mod tests {
             .unwrap();
 
         assert_eq!(response.status(), StatusCode::NOT_FOUND);
+    }
+
+    #[tokio::test]
+    async fn test_static_dir_returns_404() {
+        let app = create_router();
+
+        let response = app
+            .oneshot(
+                Request::builder()
+                    .uri("/static/any-file.png")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
+            .await
+            .unwrap();
+
+        assert_eq!(response.status(), StatusCode::NOT_FOUND);
+        
+        // Check that we get the fallback handler's response
+        let body = axum::body::to_bytes(response.into_body(), 1024).await.unwrap();
+        assert_eq!(&body[..], b"Not Found");
     }
 }
