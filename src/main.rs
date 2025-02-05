@@ -8,6 +8,7 @@ use axum::{
 };
 use std::net::SocketAddr;
 use std::collections::HashMap;
+use tracing_subscriber;
 
 mod handlers;
 mod models;
@@ -16,6 +17,15 @@ use handlers::{root_handler, url_redirect_handler, version_handler, healthz_hand
 
 #[tokio::main]
 async fn main() {
+    // Initialize tracing
+    tracing_subscriber::fmt()
+        .with_env_filter("info")
+        .with_target(true)
+        .with_thread_ids(true)
+        .with_line_number(true)
+        .with_file(true)
+        .init();
+
     // Create static URL mappings (could be moved to a config file or database in the future)
     let mut url_map = HashMap::new();
     url_map.insert("B5Z".to_string(), "https://codecraft.engineering".to_string());
