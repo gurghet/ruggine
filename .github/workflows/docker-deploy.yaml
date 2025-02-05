@@ -37,6 +37,8 @@ jobs:
             target/debug/.fingerprint
       
       - name: Run unit tests
+        env:
+          RUST_MIN_STACK: 16777216
         run: for i in {1..3}; do cargo test && break || if [ $i -eq 3 ]; then exit 1; fi; sleep 5; done
 
       - name: Set up Docker Buildx
