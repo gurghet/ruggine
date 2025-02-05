@@ -55,6 +55,7 @@ mod tests {
         body::Body,
     };
     use tower::ServiceExt;
+    use tracing_test::traced_test;
 
     #[tokio::test]
     async fn test_router_404() {
@@ -66,6 +67,37 @@ mod tests {
             .unwrap();
 
         assert_eq!(response.status(), StatusCode::NOT_FOUND);
+    }
+
+    #[tokio::test]
+    #[traced_test]
+    async fn test_access_log() {
+        let app = create_router();
+
+        let request = Request::builder()
+            .uri("/")
+            .method("GET")
+            .header("x-forwarded-for", "203.0.113.195")
+            .header("user-agent", "Mozilla/5.0 (Test Browser)")
+            .header("accept-language", "en-US,en;q=0.9")
+            .header("referer", "https://example.com")
+            .body(Body::empty())
+            .unwrap();
+
+        let response = app.clone().oneshot(request).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+
+        let logs = logs_contain("started processing request: GET / from 203.0.113.195");
+        assert!(logs, "Expected request log with IP not found");
+        
+        let logs = logs_contain("user-agent: Mozilla/5.0 (Test Browser)");
+        assert!(logs, "Expected user agent in logs");
+        
+        let logs = logs_contain("accept-language: en-US,en;q=0.9");
+        assert!(logs, "Expected accept-language in logs");
+        
+        let logs = logs_contain("referer: https://example.com");
+        assert!(logs, "Expected referer in logs");
     }
 
     #[tokio::test]

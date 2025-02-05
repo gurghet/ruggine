@@ -1,14 +1,32 @@
 use axum::{
     response::{Html, IntoResponse},
-    http::{StatusCode, header::CONTENT_TYPE},
+    http::{StatusCode, header::CONTENT_TYPE, Request},
+    body::Body,
 };
 use std::fs;
 use percent_encoding::percent_decode_str;
 use std::path::Path;
+use tracing;
 
 // Constants
 
-pub async fn root_handler() -> impl IntoResponse {
+pub async fn root_handler(request: Request<Body>) -> impl IntoResponse {
+    let ip = request
+        .headers()
+        .get("x-forwarded-for")
+        .and_then(|h| h.to_str().ok())
+        .unwrap_or("unknown");
+
+    // Log the initial request line
+    tracing::info!("started processing request: GET / from {}", ip);
+    
+    // Log all headers
+    for (name, value) in request.headers() {
+        if let Ok(value_str) = value.to_str() {
+            tracing::info!("{}: {}", name.as_str(), value_str);
+        }
+    }
+
     match fs::read_to_string("static/index.html") {
         Ok(content) => Html(content).into_response(),
         Err(_) => (
