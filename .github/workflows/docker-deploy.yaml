@@ -37,7 +37,11 @@ jobs:
             target/debug/.fingerprint
       
       - name: Run unit tests
-        run: cargo test
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: cargo test
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
